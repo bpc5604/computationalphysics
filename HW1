@@ -1,0 +1,116 @@
+"""
+HW #1a
+Blake Cole
+1-14-20	
+"""
+
+"""
+Problem 1: Calculate time it takes for a ball to hit the ground based on user input for height.
+Method: Kinematic Equation of Motion: d=v*t+1/2at^2    
+solve for time, initial velocity is zero
+t=sqrt(2d/a)
+"""
+print("====================")  ##line break between problems
+print("Problem 1:")
+
+
+import numpy as np   
+import math as m
+import matplotlib.pyplot as plt
+
+accel=9.81  #define constant acceleration
+
+
+
+d=float(input("Enter Tower Height:" ))    ##displacement from ground
+
+t=np.sqrt(2*d/accel)  ##equation of motion
+
+print("Time=",t,"seconds")
+
+
+print("====================")  
+
+"""
+Problem 2: Convert Polar to Cartesian
+"""
+print("Problem 2:")
+
+r1=float(input("Enter R:" ))      ##user input
+theta1=float(input("Enter Theta:" ))
+
+px=r1*np.cos(theta1)
+py=r1*np.sin(theta1)
+
+print("Polar:", r1,theta1)
+print("Cartesian:", px,py)
+
+print("====================")
+
+
+
+
+
+
+
+
+
+"""
+Problem 3: Convert Cartesian to Polar 
+Method: Input x,y
+convert using x=rcos(),y=rsin(), print results
+"""
+print("Problem 3:")
+
+x=float(input("Enter X coord:"))    ##user x input
+y=float(input("Enter Y coord:"))
+
+r=m.sqrt(x**2+y**2)     
+print(r)
+if x==0:            ###cant divide by zero so add an if statement incase x=0
+	theta=90
+else:
+	theta=m.atan((y/x))
+
+print(theta)
+print("Cartesian:",x,y)
+print("Polar:", r,theta)
+print("====================") 
+
+
+
+
+"""
+Problem 4: Calculate distance of a point to origin in cylindrical
+Method: input r,theta,z
+convert to cartesian, then use d=sqrt(x^2 + y^2 + z^2)=sqrt(r^2 + z^2)
+**note im naming variables oddly to avoid reuse**
+"""
+
+r2=float(input("Enter R coord:" ))    ###user input statements 
+theta2=float(input("Enter Theta in degrees:" ))
+z2=float(input("Enter Z coord:" ))
+
+distance=np.sqrt(r2**2 + z2**2)      ##vector magnitude formula
+print("Distance:",distance)
+print("====================") 
+
+
+
+
+
+"""
+Problem 5: read data from a file and plot
+Method use numpy to read data in
+"""
+print("Problem 5")
+data=np.loadtxt("numbers.csv",delimiter=',')     ##load comma separated values using numpys loadtxt function
+xx=data[:,0]    ##x data is column 0
+yy=data[:,1]    ##y data is column 1
+print(xx,yy)    ##print the data just to verify its reading correctly
+plt.plot(xx,yy)
+plt.title("X,Y data from Numbers.csv")    
+plt.xlabel("X Data")
+plt.ylabel("Y Data")
+plt.show()
+
