@@ -1,0 +1,94 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+"""
+HW 2a
+Blake Cole
+1/21/2020
+"""
+
+"""
+Problem 1: Integrate velocities.txt using trapezoidal rule
+Method: Use the trapezoidal rule to algorithmically integrate the given data
+"""
+
+right_limit=0
+left_limit=100
+
+n=100   ##number of steps
+
+
+data=np.loadtxt("velocities.txt")
+time=data[:,0]
+speed=data[:,1]
+
+plt.plot(time,speed)
+
+
+
+def data_integrate(x,y):
+    y2=[0]                      ##empty array to store integral values
+    h = (x[-1] - x[0])/len(x)   ##step size
+    i=0
+    A_sum=0
+    for i in range(len(x)-1):   ##loop through values (missing last endpoint)
+        
+        ab=(y[i]+y[i+1])/2      ##calculates midpoint of a and b values
+        A=ab*h                  ##calcuates area of point
+        A_sum+=A                ##sums calculates areas
+        #print(A_sum)
+        y2.append(A_sum)        
+        #print(y2)
+    plt.plot(x,y2)
+data_integrate(time,speed)
+
+plt.show()
+
+
+
+
+def fun(x):           ##function to integrate
+    return x**4 - 2*x + 1
+
+
+
+def fun2(t):
+    return math.exp(-t**2)
+
+
+
+
+#x[i+1] - x[i]
+
+def trapezoid(f,a,b,n):
+    h=(b-a)/n
+    sum=0.5*(f(a) + f(b))
+    i=0
+    for i in range (0,n):
+        sum=sum + f(a + h*i)
+        i+=1
+    integ=sum*h
+    print(integ)
+    #plt.plot(time,integ)
+trapezoid(fun,0,2,10)
+
+
+
+def simpsons(f,a,b,n):
+    h=(b-a)/n
+    sum=f(a)+f(b)
+    
+    i=0
+    e_sum=o_sum=0
+    for i in np.arange(1,n,2):    ##odd range
+        o_sum+=f(a + h*i)
+        i+=1
+    for i in np.arange(2,n,2):    ##even range
+        e_sum+=f(a + h*i)
+        i+=1
+    integrand=sum + 4*o_sum + 2*e_sum
+    print(integrand*(h/3))
+simpsons(fun,0,2,10)
+        
+
+simpsons(fun2,0,3,.1)        
