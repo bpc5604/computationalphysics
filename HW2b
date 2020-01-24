@@ -1,0 +1,71 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import math
+"""
+HW2b
+Blake Cole
+1/23/2020
+"""
+"""
+Problem1: Integrate and plot bessel function
+Method:
+1.define integrand as a function of theta(singleinput)
+2.integrate the function from 0-pi
+    a. we have three equations to integrate m=0,1,2
+    b. for all of these x=0-20
+3. for one m only x changes
+"""
+
+m0=0
+m1=1
+m2=2
+
+theta=0
+x=0
+#m=0
+JM=0
+def bessel_fun(theta,m,x):
+    return math.cos(m*theta - x*math.sin(theta))
+
+
+"""
+for i in range(0,20):             ##generate Bessel Functions
+    JM_0=bessel_fun(m0,i)
+    JM_1=bessel_fun(m1,i)
+    JM_2=bessel_fun(m2,i)
+"""
+def simpsons(f,a,b,n,m,x):
+    h=(b-a)/n
+    sum=f(a,m,x)+f(b,m,x)
+
+    i=0
+    e_sum=o_sum=0
+    for i in np.arange(1,n,2):    ##odd range
+        o_sum+=f(a + h*i,m,x)
+        i+=1
+    for i in np.arange(2,n,2):    ##even range
+        e_sum+=f(a + h*i,m,x)
+        i+=1
+    integrand=sum + 4*o_sum + 2*e_sum
+    total=integrand*(h/3)
+    return total
+    print(total)
+
+
+for i in range(0,20):
+    #bessel_fun(m0,i)
+    #bessel_fun(m1,i)
+    #bessel_fun(m2,i)
+    simpsons(bessel_fun(theta,m1,x),0,np.pi,1000,i)
+
+
+
+
+"""
+def integral_bessel(a,b,n,x):
+    bessel1=(1/np.pi)*np.cos(m*theta - x*np.sin(theta))
+    bessel2=
+    bessel3=
+"""
+
+#simpsons(bessel_fun,0,np.pi,1000)      ##integrate the bessel function from o to pi using 1000 points
