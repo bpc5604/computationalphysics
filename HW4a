@@ -1,0 +1,57 @@
+"""
+HW 4a
+Blake Cole
+2/4/2020
+"""
+
+"""
+Problem 1: Driven Pendulum
+Method:
+simultaneously solve dw/dt dtheta/dt
+
+"""
+import matplotlib.pyplot as plt
+import numpy as np
+
+##define constants
+C= 2     ## [1/seconds**2]
+g= 9.8   ##[m/s**2]
+l=(.1)   ##in meters
+Omega=(l)    ##[1/seconds]
+
+#R=np.array([0.0,0.0],float)
+#R=[0]
+def penfun(R,t):  ##equation of a driven Pendulum
+    theta=R[0]
+    theta_dot=R[1]
+    dtheta=theta_dot
+    #dtheta=R[1]
+    dtheta_dot= -(g/l)*np.sin(theta) + C*np.cos(theta)*np.sin(Omega*t)   ##defines dtheta/dt
+    return np.array([dtheta,dtheta_dot],float)
+#def theta_dot(theta,t):
+    #return d(theta)/d(t)
+#theta=[]
+#dtheta=[]
+#theta_dot=[]
+#dtheta_dot=[]
+#R=np.array([0.0,0.0],float)
+def RKfour(a,b,y,n):
+    #R=[]   ### creates list to populate with initial value=0
+    theta=[]
+    #theta_dot=[]
+    R=np.array([0.0,0.0],float)
+    t_n=[a]  ##first value in t list is initial value to start from (independent variable)
+    h=(b-a)/n    ##evenly spaced step size
+    while t_n[-1] < b:   ##iterates from initial_t a->b
+        k_1= h*penfun(R,t_n[-1])
+        k_2= h*penfun(R + k_1/2, t_n[-1] + h/2)
+        k_3= h*penfun(R + k_2/2, t_n[-1] + h/2)
+        k_4= h*penfun(R + k_3, t_n[-1] + h)
+        #y=x_n[0] + h*function(x_n[-1],t_n[-1])     ##calculate the next approximate value in the function (then append to list in a later line)
+        t_n.append(t_n[-1]+h)    ##add a value to the t list with the latest value plus the slice width, stepping
+        theta.append(R + (k_1 + 2*k_2 + 2*k_3 + k_4)/6)        ##append the list with the calculated value
+    plt.plot(t_n,theta)
+    plt.title("R-K 4th order")
+    plt.show()
+RKfour(0,100,penfun,1000)
+plt.show()
