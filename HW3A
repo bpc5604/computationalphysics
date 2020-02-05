@@ -1,0 +1,106 @@
+"""
+HW #3a
+Blake Cole
+
+"""
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+"""
+Problem 1: use trapezoid rule and calculate Error
+Method: Calculate the integral twice, modify my previous trapezoid algorithm, and use the error formula from class
+
+"""
+
+
+def trapezoid(f,a,b,n):    ##where f is the function to integrate, a and b are limits, n is number of steps
+    h=(b-a)/n              ##evenly spaced step size
+    sum=0.5*(f(a) + f(b))
+    i=0
+    for i in range (0,n):
+        sum=sum + f(a + h*i)
+        i+=1
+    integ=sum*h
+    #print(integ)
+    return(integ)
+
+
+def function1(x):        ##defines function to integrate
+    return x**4 - 2*x + 1
+
+I_1=trapezoid(function1,0,2,10)    ##integrating the function with different steps
+I_2=trapezoid(function1,0,2,20)
+
+
+print("Problem 2:")
+print("I_1:",I_1)       ##print results then error value
+print("I_2:",I_2)
+error=(1/3)*(I_2 - I_1)
+print("Error function",error)
+print("Difference from analytical solution:",4.4-I_1)     ##missing higher order terms
+
+
+
+"""
+Problem 2: Runga-Kutta integration
+Method: define functions for the different orders of RK integration then plot the results and compare
+
+"""
+print("================")
+print("Problem 2:")
+
+def function(x,t):              ##function to integrate
+    return (-x**3 + np.sin(t))
+
+
+def eulers(a,b,y,n):   ##initial value, final x, function to integrate, number of slices  ###a and be are the independent variable
+    x_n=[0]   ### creates list to populate with initial value=0
+    t_n=[a]  ##first value in t list is initial value to start from (independent variable)
+    h=(b-a)/n    ##evenly spaced step size
+    while t_n[-1] < b:   ##iterates from initial t_n which i've declared as a--->b
+        y=x_n[-1] + h*function(x_n[-1],t_n[-1])     ##calculate the next approximate value in the function (then append to list in a later line)
+        t_n.append(t_n[-1]+h)    ##add a value to the t list with the latest value plus the slice width, stepping
+        x_n.append(y)        ##append the list with the calculated value
+    plt.plot(t_n,x_n,'r', label="Euler's")      ##plots with a red line
+    #plt.title("Euler's Method")
+    plt.legend()
+    #plt.show()
+eulers(0,10,function,100)    ## integrate the function from a->b with evenly spaced "slices"
+#plt.show()
+
+
+def midpoint(a,b,y,n):
+    x_n=[0]   ### creates list to populate with initial value=0
+    t_n=[a]  ##first value in t list is initial value to start from (independent variable)
+    h=(b-a)/n    ##evenly spaced step size
+    while t_n[-1] < b:   ##iterates from initial_t a->b
+        y=x_n[-1] + h*function(x_n[-1],t_n[-1]+(h/2))     ##calculate the next approximate value in the function (then append to list in a later line)
+        t_n.append(t_n[-1]+h)    ##add a value to the t list with the latest value plus the slice width, stepping
+        x_n.append(y)        ##append the list with the calculated value
+    plt.plot(t_n,x_n,'b', label="Midpoint")
+    #plt.title("Midpoint Method")
+    plt.legend()
+    #plt.show()
+midpoint(0,10,function,100)
+
+def RKfour(a,b,y,n,):
+    x_n=[0]   ### creates list to populate with initial value=0
+    t_n=[a]  ##first value in t list is initial value to start from (independent variable)
+    h=(b-a)/n    ##evenly spaced step size
+    while t_n[-1] < b:   ##iterates from initial_t a->b
+        k_1= h*function(x_n[-1],t_n[-1])
+        k_2= h*function(x_n[-1] + k_1/2, t_n[-1] + h/2)
+        k_3= h*function(x_n[-1] + k_2/2, t_n[-1] + h/2)
+        k_4= h*function(x_n[-1] + k_3, t_n[-1] +h)
+    
+        t_n.append(t_n[-1]+h)    ##add a value to the t list with the latest value plus the slice width, stepping
+        x_n.append(x_n[-1] + (k_1 + 2*k_2 + 2*k_3 + k_4)/6)        ##append the list with the calculated value
+    plt.plot(t_n,x_n,label="RK 4th")
+    plt.legend()
+        #plt.title("R-K 4th order")
+        #plt.show()
+RKfour(0,10,function,100)
+plt.show()
+
