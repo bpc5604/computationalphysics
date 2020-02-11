@@ -11,10 +11,57 @@ def difeq(r,t):
     v=r[1]
     dx= v
     dv= (v**2 - x - 5)
-    return np.array([dx,dv],dtype='int64')
+    return np.array([dx,dv],float)
 
 #dx_list=[1]
 #dv_list=[0]
+
+
+def leapfrog(a,b,n):
+    rvalues=np.array([0,1],dtype='float')   ### creates an array with initial values of x and v
+
+    xpoints=[0]
+    t_n=[a]  ##first value in t list is initial value to start from (independent variable)
+    h=(b-a)/n    ##evenly spaced step size
+    r_halft=rvalues + (h/2)*difeq(rvalues,t_n[-1])    ##initial half step value, required in order to use in the loop
+    while t_n[-1] < b:   ##iterates from initial_t a->b
+        rvalues += h*difeq(r_halft,t_n[-1]+(h/2))           ##updates rvalues--corresponds to r(t+h)=
+        xpoints.append(rvalues[0])    ##pulls x value of rvalues
+
+        r_halft += h*difeq(rvalues,t_n[-1] + h)            ##updates rhalf values---corresponds to r(t+3h/2)=
+
+        t_n.append(t_n[-1]+h)    ##add a value to the t list with the latest value plus the slice width, stepping
+
+    plt.plot(t_n,xpoints,'b', label="Leapfrog")
+    plt.title("Leapfrog Method")
+    plt.legend()
+    plt.show()
+    #return(R)
+#R = leapfrog(0,10,difeq,100)
+leapfrog(0,50,100000)
+#print(R)
+
+
+"""
+Problem 2: Orbit of the Earth
+Method:Turn to First order difeq, evaluate with Verlet Method
+"""
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
 def verlet(a,b,y,n):
     h=(b-a)/n
     r=[1,1]
@@ -38,3 +85,4 @@ def verlet(a,b,y,n):
 
 verlet(0,2,difeq,10000)
 plt.show()
+"""
