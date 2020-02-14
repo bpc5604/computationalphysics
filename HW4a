@@ -7,51 +7,136 @@ Blake Cole
 """
 Problem 1: Driven Pendulum
 Method:
-simultaneously solve dw/dt dtheta/dt
+simultaneously solve dw/dt dtheta/dt using RK-4 algorithm I made previously
 
 """
 import matplotlib.pyplot as plt
 import numpy as np
 
-##define constants
+###define constants
 C= 2     ## [1/seconds**2]
 g= 9.8   ##[m/s**2]
 l=(.1)   ##in meters
-Omega=(l)    ##[1/seconds]
-
-#R=np.array([0.0,0.0],float)
-#R=[0]
+Omega=(np.sqrt(g/l))    ##[1/seconds]  ##resonance at root(g/L)
+####
 def penfun(R,t):  ##equation of a driven Pendulum
-    theta=R[0]
-    theta_dot=R[1]
-    dtheta=theta_dot
+    theta=R[0]       ##first value in r list
+    theta_dot=R[1]   ##second value in r array
+    dtheta=theta_dot    ##keeps reassigning dtheta within the list...defining this way allows equation to be solved simultaneously
     #dtheta=R[1]
-    dtheta_dot= -(g/l)*np.sin(theta) + C*np.cos(theta)*np.sin(Omega*t)   ##defines dtheta/dt
+    dtheta_dot= -(g/l)*np.sin(theta) + C*np.cos(theta)*np.sin(Omega*t)   ##defines dtheta/dt to be used later
     return np.array([dtheta,dtheta_dot],float)
-#def theta_dot(theta,t):
-    #return d(theta)/d(t)
-#theta=[]
-#dtheta=[]
-#theta_dot=[]
-#dtheta_dot=[]
-#R=np.array([0.0,0.0],float)
-def RKfour(a,b,y,n):
-    #R=[]   ### creates list to populate with initial value=0
-    theta=[]
-    #theta_dot=[]
-    R=np.array([0.0,0.0],float)
+
+
+
+
+def RKfour(a,b,n):
+    R=[0,0]   ### creates list to populate with initial value=0
+    #R=np.array([0.0,0.0],float)   ##same as line above just a different way
+    theta=[0]
+    theta_dot=[]
+    #print(R)    ##print initial r list
     t_n=[a]  ##first value in t list is initial value to start from (independent variable)
     h=(b-a)/n    ##evenly spaced step size
     while t_n[-1] < b:   ##iterates from initial_t a->b
-        k_1= h*penfun(R,t_n[-1])
+        k_1= h*penfun(R,t_n[-1])    ##calculates using current value of r
         k_2= h*penfun(R + k_1/2, t_n[-1] + h/2)
         k_3= h*penfun(R + k_2/2, t_n[-1] + h/2)
         k_4= h*penfun(R + k_3, t_n[-1] + h)
         #y=x_n[0] + h*function(x_n[-1],t_n[-1])     ##calculate the next approximate value in the function (then append to list in a later line)
         t_n.append(t_n[-1]+h)    ##add a value to the t list with the latest value plus the slice width, stepping
-        theta.append(R + (k_1 + 2*k_2 + 2*k_3 + k_4)/6)        ##append the list with the calculated value
+        R+= (k_1 + 2*k_2 + 2*k_3 + k_4)/6        ##calculates new r value, doesnt make array longer just calculates new values and replaces 0,0
+        #R= R + (k_1 + 2*k_2 + 2*k_3 + k_4)/6    ##same as previous line
+        theta.append(R[0])
+        theta_dot.append(R[1])
+    #print(R)    ##verifies that the R list has been updated
+
     plt.plot(t_n,theta)
-    plt.title("R-K 4th order")
-    plt.show()
-RKfour(0,100,penfun,1000)
+    plt.title("Driven Pendulum-Resonance (RK4)")
+#    plt.show()
+#RKfour(0,100,100000)    ##calls the function w/ a,b, the function, and n number of steps
+plt.show()
+
+
+"""
+Problem 2: Harmonic and anharmonic oscillators
+Method: turn equation into two first order and solve using RK4, plot
+"""
+
+def osc(s,t):
+    w=1  ##omega value
+    x=s[0]    ##define position and velocity as elements of the r-array
+    v=s[1]
+    dx=v
+    dv=(w**2)*-x
+    return np.array([dx,dv],float)
+
+
+def rkfourth(a,b,h):
+    """
+    :integrating over t values spaced by h
+    """
+    s=[2,0]   ### creates list to populate with initial value=0
+    #R=np.array([0.0,0.0],float)   ##same as line above just a different way
+    xpoints=[s[0]]   ##initial value of x
+    dv=[]
+    #print(r)    ##print initial r list
+    t_n=[a]  ##first value in t list is initial value to start from (independent variable)
+    #h=(b-a)/n    ##evenly spaced step size
+    while t_n[-1] < b:   ##iterates from initial_t a->b
+        k_1= h*osc(s,t_n[-1])    ##calculates using current value of r
+        k_2= h*osc(s + k_1/2, t_n[-1] + h/2)
+        k_3= h*osc(s + k_2/2, t_n[-1] + h/2)
+        k_4= h*osc(s + k_3, t_n[-1] + h)
+        #y=x_n[0] + h*function(x_n[-1],t_n[-1])     ##calculate the next approximate value in the function (then append to list in a later line)
+        t_n.append(t_n[-1]+h)    ##add a value to the t list with the latest value plus the slice width, stepping
+        ds= ((k_1 + 2*k_2 + 2*k_3 + k_4)/6)       ##calculates new r value, doesnt make array longer just calculates new values and replaces 0,0
+        s+=ds
+        #r= r + (k_1 + 2*k_2 + 2*k_3 + k_4)/6    ##same as previous line
+        xpoints.append(s[0])
+        dv.append(s[1])
+        #print(r)    ##verifies that the R list has been updated
+
+    plt.plot(t_n,xpoints)
+    plt.title("Harmonic Oscillator: amplitude=2")
+    #plt.show()
+    #print(r)
+rkfourth(0,50,.001)    ##calls the function w/ a,b, the function, and n number of steps
+plt.show()
+
+
+
+def anharmonic(r,t):
+    w=1
+    x=r[0]
+    v=r[1]
+    dx=v
+    dv = -(w**2)*x**3
+    return np.array([dx,dv],float)
+
+def partc(a,b,n):
+    r=np.array([1,0],float)   ### creates list to populate with initial value
+    #R=np.array([0.0,0.0],float)   ##same as line above just a different way
+    x=[r[0]]
+    dx=[r[1]]
+    #print(R)    ##print initial r list
+    t_n=[a]  ##first value in t list is initial value to start from (independent variable)
+    h=(b-a)/n    ##evenly spaced step size
+    while t_n[-1] < b:   ##iterates from initial_t a->b
+        k_1= h*anharmonic(r,t_n[-1])    ##calculates using current value of r
+        k_2= h*anharmonic(r + k_1/2, t_n[-1] + h/2)
+        k_3= h*anharmonic(r + k_2/2, t_n[-1] + h/2)
+        k_4= h*anharmonic(r + k_3, t_n[-1] + h)
+        #y=x_n[0] + h*function(x_n[-1],t_n[-1])     ##calculate the next approximate value in the function (then append to list in a later line)
+        t_n.append(t_n[-1]+h)    ##add a value to the t list with the latest value plus the slice width, stepping
+        #r+= (k_1 + 2*k_2 + 2*k_3 + k_4)/6        ##calculates new r value, doesnt make array longer just calculates new values and replaces 0,0
+        r= r + (k_1 + 2*k_2 + 2*k_3 + k_4)/6    ##same as previous line
+        x.append(r[0])
+        dx.append(r[1])
+    #print(R)    ##verifies that the R list has been updated
+
+    plt.plot(x,dx)
+    plt.title("Phase Space of Anharmonic")
+    #plt.show()
+partc(0,50,100000)    ##calls the function w/ a,b, the function, and n number of steps
 plt.show()
