@@ -38,7 +38,7 @@ def leapfrog(a,b,n):
     plt.show()
     #return(R)
 #R = leapfrog(0,10,difeq,100)
-leapfrog(0,50,100000)
+#leapfrog(0,50,100000)
 #print(R)
 
 
@@ -47,11 +47,44 @@ Problem 2: Orbit of the Earth
 Method:Turn to First order difeq, evaluate with Verlet Method
 """
 
+def orbit(r,t):
+    x=r[0]
+    y=r[1]
+    dvx= -(GM)*(x)/((x**2 + y**2)**(3/2))
+    dvy= -(GM)*(y)/((x**2 + y**2)**(3/2))
+    return np.array([dvx,dvy],float)
 
+GM=1.327*(10**20)
+x0=1.4710*(10**11)
+y0=0
+dvx0=0
+dvy0=3.0287*(10**4)
+year=3.15*(10**7)    ##one year in seconds
+###https://en.wikipedia.org/wiki/Standard_gravitational_parameter
+def verlet(a,b,h):
+    rvalues=np.array([x0,y0],dtype='float')   ### creates an array with initial values of x and v
+    vvalues=np.array([dvx0,dvy0],float)
+    xpoints=[x0]
+    ypoints=[0]
 
+    t_n=[a]  ##first value in t list is initial value to start from (independent variable)
+    #h=(b-a)/n    ##evenly spaced step size
+    r_halft=vvalues + (h/2)*orbit(vvalues,t_n[-1])    ##initial half step value, required in order to use in the loop
+    while t_n[-1] < b:   ##iterates from initial_t a->b
+        rvalues += h*orbit(r_halft,t_n[-1]+(h/2))           ##updates rvalues--corresponds to r(t+h)=
+        xpoints.append(rvalues[0])    ##pulls x value of rvalues
+        ypoints.append(rvalues[1])
+        r_halft += h*orbit(vvalues,t_n[-1] + h)            ##updates rhalf values---corresponds to r(t+3h/2)=
 
+        t_n.append(t_n[-1]+h)    ##add a value to the t list with the latest value plus the slice width, stepping
 
-
+    plt.plot(xpoints,ypoints,'b.', label="Verlet")
+    plt.title("Orbital- Verlet Method")
+    plt.legend()
+    plt.show()
+    #return(R)
+#R = leapfrog(0,10,difeq,100)
+verlet(0,3*year,3600)
 
 
 
