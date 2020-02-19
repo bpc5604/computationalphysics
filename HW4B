@@ -13,9 +13,6 @@ def difeq(r,t):
     dv= (v**2 - x - 5)
     return np.array([dx,dv],float)
 
-#dx_list=[1]
-#dv_list=[0]
-
 
 def leapfrog(a,b,n):
     rvalues=np.array([0,1],dtype='float')   ### creates an array with initial values of x and v
@@ -38,7 +35,7 @@ def leapfrog(a,b,n):
     plt.show()
     #return(R)
 #R = leapfrog(0,10,difeq,100)
-#leapfrog(0,50,100000)
+leapfrog(0,50,100000)
 #print(R)
 
 
@@ -54,30 +51,73 @@ def orbit(r,t):
     dvy= -(GM)*(y)/((x**2 + y**2)**(3/2))
     return np.array([dvx,dvy],float)
 
+
+##initial conditions provided in the problem
 GM=1.327*(10**20)
+m=5.9722*(10**24)
 x0=1.4710*(10**11)
 y0=0
 dvx0=0
 dvy0=3.0287*(10**4)
 year=3.15*(10**7)    ##one year in seconds
+
+gpei=(-GM)*m/np.sqrt((x0**2 + y0**2))   ##initial grav pot Energy
+kei=(.5*m*np.sqrt(dvx0**2+dvy0**2))    ##inital kinetic energy
+tei=gpei+kei
+print(tei)
+
 ###https://en.wikipedia.org/wiki/Standard_gravitational_parameter
 def verlet(a,b,h):
-    rvalues=np.array([x0,y0],dtype='float')   ### creates an array with initial values of x and v
-    vvalues=np.array([dvx0,dvy0],float)
-    xpoints=[x0]
-    ypoints=[0]
-
+    rvalues=np.array([x0,y0],dtype='float')   ### creates an array with initial values of x and y
+    vvalues=np.array([dvx0,dvy0],float)      ##list to store velocity values
+    xpoints=[x0]     ##x list to use for plotting
+    ypoints=[0]     ##y list to use for plotting later
+    gpepoints=[]    ##list of grav potential energy
+    KEpoints=[]
+    TEpoints=[]
+    #print(rvalues)
     t_n=[a]  ##first value in t list is initial value to start from (independent variable)
+    tpoints=[]
     #h=(b-a)/n    ##evenly spaced step size
-    r_halft=vvalues + (h/2)*orbit(vvalues,t_n[-1])    ##initial half step value, required in order to use in the loop
+    v_halft=vvalues + (h/2)*orbit(rvalues,t_n[-1])    ##INITAL HALF STEP VALUE, required in order to use in the loop
     while t_n[-1] < b:   ##iterates from initial_t a->b
-        rvalues += h*orbit(r_halft,t_n[-1]+(h/2))           ##updates rvalues--corresponds to r(t+h)=
+
+        rvalues+=h*v_halft  ##updates x and y values, corresponds to x(t+h)=x(t) +hv(t+h/2)
+        #print(rvalues)
+        k=h*orbit(rvalues,t_n[-1]+h)
+
+        vvalues+=v_halft + .5*k    ## corresponds to v(t+h)
+        v_halft +=k                 ##corresponds to v(t h/2)
+
         xpoints.append(rvalues[0])    ##pulls x value of rvalues
         ypoints.append(rvalues[1])
-        r_halft += h*orbit(vvalues,t_n[-1] + h)            ##updates rhalf values---corresponds to r(t+3h/2)=
-
         t_n.append(t_n[-1]+h)    ##add a value to the t list with the latest value plus the slice width, stepping
+        tpoints.append(t_n[-1])
 
+        """
+        added for part c
+        """
+        gpe=(-GM)*m/(np.sqrt((rvalues[0]**2 + rvalues[1]**2)))
+        gpepoints.append(gpe)
+
+        KE=(.5*m*(vvalues[0]**2 + vvalues[1]**2))
+        KEpoints.append(KE)
+
+        TE=gpe+KE
+        TEpoints.append(TE)
+
+
+        """
+        when plotted separately the energies appear to have curvature
+        but when plotted in total the gravitational energy appears flat
+        """
+
+    ##plotting statements
+    plt.plot(tpoints,gpepoints,'.',label="Grav Potential Energy")
+    #plt.plot(tpoints,KEpoints,'.',label="Kinetic Energy")
+    plt.plot(tpoints,TEpoints,'.',label="Total Energy")
+    plt.legend()
+    plt.show()
     plt.plot(xpoints,ypoints,'b.', label="Verlet")
     plt.title("Orbital- Verlet Method")
     plt.legend()
@@ -85,37 +125,3 @@ def verlet(a,b,h):
     #return(R)
 #R = leapfrog(0,10,difeq,100)
 verlet(0,3*year,3600)
-
-
-
-
-
-
-
-
-
-"""
-def verlet(a,b,y,n):
-    h=(b-a)/n
-    r=[1,1]
-    #r=np.array([0.0,1.0],float)
-    dx_list=[]
-    dv_list=[1]
-    tn=[a]
-
-    while tn[-1] < b:
-        dx= 0 + h*difeq(r,tn[-1])    ##new dx value
-        dv=difeq(r,tn[-1]) + h*difeq(r,tn[-1])  ##new dv value
-        tn.append(1)
-        #tn+=0.5*h
-
-        r+=(dx)
-        r+=(dv)
-        dx_list.append(r[0])
-        dv_list.append(r[1])
-
-    plt.plot(tn,dv_list)
-
-verlet(0,2,difeq,10000)
-plt.show()
-"""
