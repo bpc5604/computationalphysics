@@ -2,30 +2,54 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-#xspace=yspace=np.array(np.arange(100))
-phis = np.zeros((100,100))   ## creates 100x100 grid of zeros
-#print(xspace)
 
-#M[0:99]   ###top right corner of grid
-#def phis(x,y):
-    #return (x,y)
 
-#print(phistate(xspace,yspace))
-#print(M[0,99])
+#print(phi)
+#phip = np.zeros((100,100))   ## creates 100x100 grid of zeros
+
+
+
+x=y=100
+phi=np.zeros((x,y))     ##defines 100x100 grid of zeroes
+phip=np.zeros((x,y))       ##defines empty array, phi prime
+
+phi[0,0:100]=1          ##assigns top row of grid=1
+print(phi)
 
 a=1
-for i in range(0,900):
-    #phi=[]
-    phi=np.array([])
-    phis[0,i]=1
-    phis[i,0]=0
-    phi+=phis[i+a,i]+phis[i-a,i] + phis[i,i-a] + phis[i,i-a]
-    print(phi)
-"""
-a=1
-for i in range(xspace):
-    delphilist=[]
-    delphilist=(phistate(i+a,i)+phistate(i-a,i) + phistate(i,i-a) + phistate(i,i-a))
-    delphilist.append(delphi)
-    print(delphilist)
-"""
+
+threshold=.000001
+
+N=99
+for n in range(1000):
+    for i in range(1,N):    ###x range  (skip first row)
+        for j in range(1,N):    ##y range
+            if j==0:
+                phip[i,j]=phi[i,j]
+            else:
+                phip[i,j] = (1/4)*(phi[i+1,j] + phi[i-1,j] + phi[i,j+1] + phi[i,j-1])
+                
+                #phi=np.copy(phip)
+    d = np.abs(phi-phip).max()
+    if d < threshold: 
+        break
+    else:
+        phi=np.copy(phip)
+#print(phip)
+plt.imshow(phip,cmap='hot') 
+plt.colorbar()
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
