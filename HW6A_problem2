@@ -1,0 +1,41 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+x=y=100
+phi=np.zeros((x+1,y+1))     ##defines 100x100 grid of zeroes
+phip=np.zeros((x+1,y+1))       ##defines empty array, phi prime
+
+phi[60:80,20:40]=-1          ##creates neg charge in lower left
+phi[20:40,60:80]=1       ##creates pos charge in upper right
+print(phi)
+
+a=1
+
+threshold=.000001
+plt.imshow(phi,cmap='hot')
+plt.title("Initial Set up")
+plt.show()
+N=100
+
+ro=np.zeros((x+1,y+1))     ##create grid for density values
+ro[60:80,20:40]=-1          ##creates neg charge in lower left
+ro[20:40,60:80]=1
+
+#density= a**2/(4*epsilon)
+d=1
+while d>threshold:
+    for i in range(0,x+1):    ###x range  (skip first row)
+        for j in range(0,x+1):    ##y range
+            if 60<=i<=80 or 20<=i<=40 or 60<=j<=80 or 20<=j<=40:    ##tells me out of range
+            #if i==0 or j==0 or i==x or j==y:   works
+                phip[i,j]=phi[i,j]
+            else:
+                phip[i,j] = (1/4)*(phi[i+1,j] + phi[i-1,j] + phi[i,j+1] + phi[i,j-1]) + (.01/4)*ro[i,j]
+    phi=np.copy(phip)
+    d = np.abs(phi-phip).max()
+
+
+plt.imshow(phip,cmap='hot')
+plt.colorbar()
+plt.show()
