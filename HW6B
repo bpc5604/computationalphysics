@@ -1,0 +1,39 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+x=y=100
+phi=np.zeros((x+1,y+1))     ##defines 101x101 grid of zeroes
+phip=np.zeros((x+1,y+1))       ##defines empty array, phi prime
+
+phip[0,0:101]=1          ##assigns top row of grid=1
+print(phip)              ##prints initial grid to verify boundaries are implemented
+
+a=1
+
+threshold=.001
+w=.9
+N=101   ##didnt end up using these variables
+d=1     ##initialize threshold loop to run
+
+while d>threshold:    ##run while less than threshold values
+    d=0   ##initializes d as a small value but only for the first trip thru the loop
+    for i in range(0,N):    ###x range  (skip first row)
+        for j in range(0,N):    ##y range
+            if i==0 or j==0 or i==x or j==y:    ##applies boundaries, (side note j==101 code breaks)
+                phi[i,j]=phip[i,j]    ##set to original grid (boundaries)
+
+            else:
+                e=phi[i,j]   ## stores elements
+
+                phi[i,j] = ((1+w)/4)*(phi[i+1,j] + phi[i-1,j] + phi[i,j+1] + phi[i,j-1]) - w*phi[i,j]  ##gauss-seidel + overrelaxation method
+                f = np.abs(e-phi[i,j])  #calculates change in current element
+
+                if f>d:     ##if f is larger than d update d to f (this stores only the largest difference)
+                    d=f
+                #d = np.abs(e-f).max()    ###threshold calculation
+    #phi=np.copy(phi)   ##at the end of the routine update phi to newest calculated values and run again
+
+plt.imshow(phi,cmap='hot')
+plt.colorbar()
+plt.show()
