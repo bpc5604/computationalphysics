@@ -1,0 +1,44 @@
+"""
+Blake Cole
+HW #6B Problem 2:
+Electronic Capacitor
+Method: solve using any previous method
+"""
+"""
+phi[i,j]  i=row, j=column
+"""
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+x=y=100
+grid=np.zeros((x+1,y+1))
+grid1=np.zeros((x+1,y+1))
+ro=np.zeros((x+1,y+1))     ##create grid for density values
+
+grid[20:80,20]=1
+grid[20:80,80]=-1
+print(grid)
+threshold=.0000001
+
+N=100   ##didnt end up using these variables
+d=1     ##initialize threshold loop to run
+while d>threshold:    ##run while less than threshold values
+    for i in range(0,N):    ###x range  (skip first row)
+        for j in range(0,N):    ##y range
+            #if 20<i<80 or j==20 or j==80:    ##applies boundaries, (side note j==101 code breaks)
+            if j==20 or j==80:
+                grid1[i,j]=grid[i,j]    ##set to original grid (boundaries)
+            elif 20==i==80:
+                grid1[i,j]=grid[i,j]    ##set to original grid (boundaries)
+            else:
+                grid1[i,j] = (1/4)*(grid[i+1,j] + grid[i-1,j] + grid[i,j+1] + grid[i,j-1])  ##jacobian routine
+
+
+    d = np.abs(grid-grid1).max()    ###threshold calculation
+    grid=np.copy(grid1)   ##at the end of the routine update phi to newest calculated values and run again
+
+plt.imshow(grid1,cmap='binary')
+plt.colorbar()
+plt.show()
