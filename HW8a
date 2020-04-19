@@ -1,0 +1,106 @@
+"""
+Blake Cole
+HW8a
+"""
+
+"""
+Problem 1: Random dice roll
+"""
+
+import random
+
+min=1 ##min and max dice values
+max=6
+
+print("Die 1:", random.randint(min,max))
+print("Die 2:", random.randint(min,max))
+
+counter=0
+amill=1000000
+
+for i in range(0,amill):
+    roll1=random.randint(min,max)
+    roll2=random.randint(min,max)
+    #print(roll1,roll2)
+    if roll1==6 and roll2 ==6:
+        counter+=1
+print("Double sixes:",counter)
+print("Fraction of double sixes:",counter/amill)
+
+
+"""
+Problem 2: Radioactive Decay
+"""
+from numpy import arange
+from random import random
+import matplotlib.pyplot as plt
+
+NBi=10000  ##initial sample size of Bi213
+NPb=000
+NTl=0
+NBi209=0
+taubi=46*60   ##Bi213 half life [in seconds]
+tautl=2.2*60  ##Tl209 half life [in seconds]
+taupb=3.3*60  ##Pb209 half life [in seconds]
+h=1  ##time step [in seconds]
+probbi=1-2**(-h/taubi)
+probtl=1-2**(-h/tautl)
+probpb=1-2**(-h/taupb)
+
+
+tmax=20000   ##[in seconds]
+tpoints=arange(0.0,tmax,h)
+Bipoints=[]
+Tlpoints=[]
+Pbpoints=[]
+Bi209points=[]
+
+### Pb209 decay
+for t in tpoints:
+    Pbpoints.append(NPb)
+    Bi209points.append(NBi209)
+    decay=0
+    for i in arange(NPb):
+        if random()<probpb:
+            decay+=1
+    NPb-=decay
+    NBi209+=decay
+
+###Tl209 decay
+#for t in tpoints:
+    #Pbpoints.append(NPb)
+    Tlpoints.append(NTl)
+    decay=0
+    for i in arange(NTl):
+        if random()<probtl:
+            decay+=1
+    NTl-=decay
+    NPb+=decay
+
+
+###Bi213 decay chain
+#for t in tpoints:
+    Bipoints.append(NBi)
+    #Tlpoints.append(NTl)
+    #Pbpoints.append(NPb)
+    decay=0
+    for i in range(NBi):
+        if random()< probbi:
+            decay+=1
+    NBi-=decay
+    NTl+=(.0209)*decay    ## 2.09% of decays
+    NPb+=(.9791)*decay    ## 97.91% of decays
+    #NPb+=decay
+
+
+###
+###
+
+
+plt.plot(tpoints,Bipoints,label="Bi213")
+plt.plot(tpoints,Tlpoints,label="Tl")
+plt.plot(tpoints,Pbpoints,label="Pb")
+plt.plot(tpoints,Bi209points,label="Bi209")
+plt.legend()
+plt.show()
+#print(prob)
