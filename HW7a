@@ -1,0 +1,65 @@
+"""
+Blake Cole
+HW7a -Thermal Diffusion in Earth's crust
+"""
+
+import numpy as np
+from pylab import plot, xlabel, ylabel, show
+
+A=10    ##surface temp
+B=12
+C=11  ##temp below surface at 20m depth
+depth=20 ##meters
+D=0.1  ##meters squared per day
+year=365    ##days
+month=30    ##days
+
+
+N=200    ##number of divisions
+a=depth/N   ##grid spacing
+h=1e-4
+eps=h/1000
+
+grid=np.empty(N+1,float)   ##initialize grid
+grid2=np.empty(N+1,float)
+
+grid[0]=A    ##surface temp
+grid[N]=C    ##20m depth temp
+grid[1:N]=A  ##in between temp taken to be 10
+grid2[0]=grid[0]
+grid2[N]=grid[N]
+
+
+t=0.0   ##start time at zero
+
+t1=month
+t2=2*month
+t3=3*month
+t4=4*month
+t5=5*month
+#tend=t5+eps
+tend=10*year
+c=h*D/a*a
+
+while t<tend:
+    for i in range(1,N):
+        grid2[i]=grid[i] + c*(grid[i+1] + grid[i-1] - 2*grid[i])
+    grid,grid2=grid2,grid   ##swap grids
+    t+=month
+
+    """
+    if abs(t-t1)<eps:
+        plot(grid)
+    if abs(t-t2)<eps:
+        plot(grid)
+    if abs(t-t3)<eps:
+        plot(grid)
+    if abs(t-t4)<eps:
+        plot(grid)
+    """
+    if t-tend<year:
+        plot(grid)
+    
+xlabel("depth")
+ylabel("temp")
+show()
